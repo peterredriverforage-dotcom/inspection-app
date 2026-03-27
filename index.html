@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FleetPro | Dashboard</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+  :root {
+    --navy: #0a0f1e;
+    --navy2: #111827;
+    --blue: #2563eb;
+    --blue-bright: #3b82f6;
+    --steel: #1e293b;
+    --plate: #f1f5f9;
+    --text: #0f172a;
+    --muted: #64748b;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --success: #10b981;
+    --border: #e2e8f0;
+    --white: #ffffff;
+    --radius: 16px;
+    --radius-lg: 22px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--plate);
+    min-height: 100vh;
+    color: var(--text);
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--navy2);
+    padding: 0 16px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+
+  .nav-brand {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .nav-brand .icon {
+    width: 34px; height: 34px;
+    background: var(--blue);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .nav-brand span { color: var(--blue-bright); }
+
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+
+  .nav-user {
+    text-align: right;
+    display: flex; flex-direction: column;
+  }
+  .nav-user .name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: #fff; line-height: 1;
+    text-transform: uppercase;
+    max-width: 100px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .nav-user .role {
+    font-size: 9px; font-weight: 700;
+    color: var(--blue-bright);
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-top: 2px;
+  }
+
+  .btn-icon {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.08);
+    border: none; border-radius: 10px;
+    color: #fff; font-size: 14px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .btn-icon:active { background: #ef4444; }
+
+  /* ── CONTENT ── */
+  main { padding: 16px; max-width: 700px; margin: 0 auto; }
+
+  /* ── DRIVER HERO ── */
+  .driver-hero {
+    background: linear-gradient(135deg, var(--navy2) 0%, #1a2744 100%);
+    border-radius: var(--radius-lg);
+    padding: 24px 20px;
+    margin-bottom: 16px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .driver-hero::before {
+    content: '\f0d1';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: -10px; bottom: -16px;
+    font-size: 110px;
+    color: rgba(255,255,255,0.04);
+    pointer-events: none;
+  }
+  .driver-hero .greeting {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--blue-bright); margin-bottom: 6px;
+  }
+  .driver-hero h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 28px; font-weight: 900;
+    text-transform: uppercase; line-height: 1.1;
+    margin-bottom: 20px;
+  }
+  .btn-new-inspection {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%;
+    padding: 18px;
+    background: var(--blue);
+    color: #fff;
+    border: none; border-radius: var(--radius);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px; font-weight: 900;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+    text-decoration: none;
+  }
+  .btn-new-inspection:active { transform: scale(0.97); background: #1d4ed8; }
+
+  /* ── STATS GRID ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px 12px;
+    text-align: center;
+    border: 1.5px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .stat-card .label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 6px;
+  }
+  .stat-card .value {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 30px; font-weight: 900; line-height: 1;
+  }
+  .stat-card .value.danger { color: var(--danger); }
+  .stat-card .value.success { color: var(--success); }
+  .stat-card .value.warning { color: var(--warning); }
+
+  /* ── SEARCH ── */
+  .search-wrap {
+    position: relative; margin-bottom: 14px;
+  }
+  .search-wrap i {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted); font-size: 14px; pointer-events: none;
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif;
+    font-size: 16px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  .search-wrap input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+  /* ── LIST SECTION ── */
+  .section-header {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    padding-left: 4px;
+  }
+
+  .inspection-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .insp-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px;
+    border: 1.5px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex; align-items: center; gap: 14px;
+    transition: box-shadow 0.2s;
+    animation: fadeInUp 0.3s ease both;
+  }
+  .insp-card:active { box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .insp-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .insp-icon.ok { background: #d1fae5; color: var(--success); }
+  .insp-icon.defect { background: #fee2e2; color: var(--danger); }
+  .insp-icon.resolved { background: #e0f2fe; color: var(--blue); }
+
+  .insp-info { flex: 1; min-width: 0; }
+  .insp-unit {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 17px; font-weight: 900;
+    text-transform: uppercase; color: var(--text);
+    line-height: 1;
+  }
+  .insp-meta {
+    font-size: 11px; color: var(--muted); font-weight: 500;
+    margin-top: 3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .insp-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1px;
+    white-space: nowrap;
+    margin-top: 5px;
+  }
+  .badge-ok { background: #d1fae5; color: #065f46; }
+  .badge-defect { background: #fee2e2; color: #991b1b; }
+  .badge-resolved { background: #dbeafe; color: #1e40af; }
+
+  .insp-actions { display: flex; flex-direction: column; gap: 6px; flex-shrink: 0; }
+
+  .act-btn {
+    width: 36px; height: 36px;
+    border: none; border-radius: 10px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+    -webkit-appearance: none;
+  }
+  .act-btn.view { background: var(--plate); color: var(--steel); }
+  .act-btn.view:active { background: var(--blue); color: #fff; }
+  .act-btn.repair { background: #fef3c7; color: #92400e; }
+  .act-btn.repair:active { background: var(--warning); color: #fff; }
+  .act-btn.del { background: var(--plate); color: var(--muted); }
+  .act-btn.del:active { background: var(--danger); color: #fff; }
+
+  /* ── EMPTY STATE ── */
+  .empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty i { font-size: 48px; opacity: 0.2; margin-bottom: 12px; display: block; }
+  .empty p { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+
+  /* ── LOADING ── */
+  .loading { text-align: center; padding: 60px 20px; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading p { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+
+  /* ── MODAL (repair/delete confirm) ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 200;
+    align-items: flex-end; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-sheet {
+    background: var(--white);
+    border-radius: 24px 24px 0 0;
+    padding: 28px 24px 40px;
+    width: 100%; max-width: 500px;
+    animation: sheetUp 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes sheetUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+  .modal-handle {
+    width: 40px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+  .modal-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px; font-weight: 900;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .modal-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--plate);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif;
+    font-size: 16px;
+    outline: none; margin-bottom: 16px;
+    -webkit-appearance: none;
+  }
+  .modal-input:focus { border-color: var(--blue); }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-btn {
+    flex: 1; padding: 16px;
+    border: none; border-radius: var(--radius);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 15px; font-weight: 900;
+    letter-spacing: 2px; text-transform: uppercase;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .modal-btn:active { opacity: 0.8; }
+  .modal-btn.cancel { background: var(--plate); color: var(--muted); }
+  .modal-btn.confirm { background: var(--navy2); color: #fff; }
+  .modal-btn.danger-confirm { background: var(--danger); color: #fff; }
+
+  /* Responsive tweak */
+  @media (max-width: 340px) {
+    .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .stat-card .value { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="icon"><i class="fas fa-truck-moving"></i></div>
+    Fleet<span>Pro</span>
+  </div>
+  <div class="nav-right" id="navRight">
+    <div class="nav-user" id="navUser"></div>
+    <button class="btn-icon" onclick="doSignOut()" title="Sign Out"><i class="fas fa-power-off"></i></button>
+  </div>
+</nav>
+
+<main>
+  <!-- Manager stats -->
+  <div id="statsRow" class="stats-grid" style="display:none"></div>
+
+  <!-- Manager search -->
+  <div id="searchWrap" class="search-wrap" style="display:none">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchInput" inputmode="search" placeholder="Search unit # or driver..." oninput="renderUI()">
+  </div>
+
+  <!-- Driver hero -->
+  <div id="driverHero" class="driver-hero" style="display:none">
+    <div class="greeting">Good day, operator</div>
+    <h2 id="displayName">---</h2>
+    <a href="inspection.html" class="btn-new-inspection">
+      <i class="fas fa-clipboard-check"></i> New Inspection
+    </a>
+  </div>
+
+  <!-- Record list -->
+  <div class="section-header" id="listLabel" style="display:none">Recent Records</div>
+  <div id="listContainer">
+    <div class="loading"><div class="spinner"></div><p>Loading...</p></div>
+  </div>
+</main>
+
+<!-- Repair modal -->
+<div class="modal-overlay" id="repairModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><i class="fas fa-wrench" style="color:var(--warning);margin-right:8px"></i>Repair Log</div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;font-weight:500;">Describe what was repaired on this unit.</p>
+    <input class="modal-input" id="repairNote" placeholder="e.g. Replaced rear air bag, re-torqued U-bolts...">
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal('repairModal')">Cancel</button>
+      <button class="modal-btn confirm" onclick="confirmRepair()">Mark Resolved</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirm modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" style="color:var(--danger)"><i class="fas fa-trash-alt" style="margin-right:8px"></i>Delete Record?</div>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:20px;font-weight:500;">This action is permanent and cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal('deleteModal')">Cancel</button>
+      <button class="modal-btn danger-confirm" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+firebase.initializeApp({ apiKey: "AIzaSyB5BGypAgb-3KQhf0N1GU5-IqdhtvtzVjw", projectId: "inspection-app-4f19d" });
+const auth = firebase.auth(), db = firebase.firestore();
+let state = { user: null, profile: null, rawData: [] };
+let pendingRepairId = null, pendingDeleteId = null;
+
+auth.onAuthStateChanged(async (u) => {
+  if (!u) { location.href = "login.html"; return; }
+  const doc = await db.collection("users").doc(u.uid).get();
+  if (!doc.exists) { auth.signOut(); return; }
+  state.profile = doc.data(); state.user = u;
+  // Normalize role to lowercase for safety
+  state.profile.role = (state.profile.role || 'driver').toLowerCase();
+  updateNav();
+  if (state.profile.role === 'admin' || state.profile.role === 'manager') {
+    document.getElementById('statsRow').style.display = 'grid';
+    document.getElementById('searchWrap').style.display = 'block';
+    if (Notification.permission !== "granted") Notification.requestPermission();
+  } else {
+    document.getElementById('driverHero').style.display = 'block';
+    document.getElementById('displayName').innerText = state.profile.name;
+  }
+  document.getElementById('listLabel').style.display = 'block';
+  startLiveWatcher();
+});
+
+function startLiveWatcher() {
+  const isDriver = state.profile.role === 'driver';
+
+  // No orderBy here — avoids composite index requirement in Firestore.
+  // Sorting is done client-side instead.
+  // Single company — drivers see own records, admins see all records.
+  let q = isDriver
+    ? db.collection("inspections").where("driverId", "==", state.user.uid).limit(50)
+    : db.collection("inspections").limit(50);
+
+  q.onSnapshot(snap => {
+    state.rawData = snap.docs
+      .map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+    renderUI();
+    // Always clear the loading spinner even if zero results // Always called — even with 0 results, shows empty state instead of spinner
+    state.loaded = true;
+    if (!isDriver) {
+      snap.docChanges().forEach(ch => {
+        if (ch.type === "added") {
+          const d = ch.doc.data();
+          const isNew = d.createdAt && (Date.now() - d.createdAt.seconds * 1000) < 30000;
+          if (isNew) new Notification(`New Inspection: Unit #${d.truck}`, { body: `By ${d.driverName}` });
+        }
+      });
+    }
+  }, err => {
+    console.error("Firestore query error:", err);
+    // Collection may not exist yet — show friendly empty state
+    state.rawData = [];
+    renderUI();
+  });
+}
+
+function renderUI() {
+  const search = (document.getElementById('searchInput')?.value || "").toLowerCase();
+  const filtered = state.rawData.filter(i =>
+    (i.truck||"").toLowerCase().includes(search) ||
+    (i.driverName||"").toLowerCase().includes(search)
+  );
+  if (state.profile.role !== 'driver') renderStats();
+  const isManager = state.profile.role !== 'driver';
+  const container = document.getElementById('listContainer');
+
+  if (filtered.length === 0) {
+    const msg = isManager ? 'No inspections submitted yet' : 'Tap New Inspection to get started';
+    container.innerHTML = `<div class="empty"><i class="fas fa-clipboard"></i><p>${msg}</p></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="inspection-list">${filtered.map((i, idx) => {
+    const date = i.createdAt ? new Date(i.createdAt.seconds*1000).toLocaleDateString('en-CA', {month:'short',day:'numeric',year:'numeric'}) : '---';
+    const time = i.createdAt ? new Date(i.createdAt.seconds*1000).toLocaleTimeString('en-CA', {hour:'2-digit',minute:'2-digit'}) : '';
+    let iconClass, badgeClass, badgeText;
+    if (i.resolved) { iconClass='resolved'; badgeClass='badge-resolved'; badgeText='Repaired'; }
+    else if (i.issues > 0) { iconClass='defect'; badgeClass='badge-defect'; badgeText=`${i.issues} Defect${i.issues>1?'s':''}`; }
+    else { iconClass='ok'; badgeClass='badge-ok'; badgeText='DOT Compliant'; }
+
+    return `<div class="insp-card" style="animation-delay:${idx*0.04}s">
+      <div class="insp-icon ${iconClass}">
+        <i class="fas ${i.resolved ? 'fa-check-circle' : i.issues > 0 ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i>
+      </div>
+      <div class="insp-info">
+        <div class="insp-unit">Unit #${i.truck}${i.trailer && i.trailer !== 'N/A' ? ` · T#${i.trailer}` : ''}</div>
+        <div class="insp-meta">${isManager ? (i.driverName || '') + ' · ' : ''}${date} ${time}</div>
+        <span class="insp-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="insp-actions">
+        <a href="report.html?id=${i.id}" class="act-btn view" title="View Report"><i class="fas fa-file-invoice"></i></a>
+        ${isManager && i.issues > 0 && !i.resolved ? `<button class="act-btn repair" onclick="openRepair('${i.id}')" title="Mark Repaired"><i class="fas fa-wrench"></i></button>` : ''}
+        ${isManager ? `<button class="act-btn del" onclick="openDelete('${i.id}')" title="Delete"><i class="fas fa-trash-alt"></i></button>` : ''}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderStats() {
+  const total = state.rawData.length;
+  const activeDefects = state.rawData.filter(r => r.issues > 0 && !r.resolved).length;
+
+  // Score calculation — uses checklist if available, falls back to issues count
+  let totalItems = 0, failedItems = 0;
+  state.rawData.forEach(r => {
+    if (r.checklist) {
+      const items = Object.values(r.checklist);
+      totalItems += items.length;
+      if (!r.resolved) failedItems += items.filter(i => i.status === 'fail').length;
+    } else {
+      // Older records without checklist: count as 22 total items
+      totalItems += 22;
+      if (!r.resolved) failedItems += (r.issues || 0);
+    }
+  });
+  const score = totalItems > 0 ? Math.round(((totalItems - failedItems) / totalItems) * 100) : 100;
+
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="label">Reports</div><div class="value">${total}</div></div>
+    <div class="stat-card"><div class="label">Defects</div><div class="value ${activeDefects > 0 ? 'danger' : 'success'}">${activeDefects}</div></div>
+    <div class="stat-card"><div class="label">Score</div><div class="value ${score < 90 ? 'warning' : 'success'}">${score}%</div></div>`;
+}
+
+function updateNav() {
+  document.getElementById('navUser').innerHTML = `
+    <div class="name">${state.profile.name}</div>
+    <div class="role">${state.profile.role}</div>`;
+}
+
+function openRepair(id) { pendingRepairId = id; document.getElementById('repairNote').value=''; openModal('repairModal'); }
+function openDelete(id) { pendingDeleteId = id; openModal('deleteModal'); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+async function confirmRepair() {
+  const note = document.getElementById('repairNote').value.trim();
+  if (!note) { document.getElementById('repairNote').focus(); return; }
+  await db.collection("inspections").doc(pendingRepairId).update({ resolved: true, repairNote: note, resolvedAt: firebase.firestore.FieldValue.serverTimestamp() });
+  closeModal('repairModal');
+}
+
+async function confirmDelete() {
+  await db.collection("inspections").doc(pendingDeleteId).delete();
+  closeModal('deleteModal');
+}
+
+function doSignOut() { auth.signOut().then(() => location.href='login.html'); }
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if(e.target === el) el.classList.remove('open'); });
+});
+</script>
+</body>
+</html>

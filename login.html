@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>FleetPro | Login</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+  :root {
+    --navy: #0a0f1e; --navy2: #111827; --blue: #2563eb; --blue-bright: #3b82f6;
+    --plate: #f1f5f9; --text: #0f172a; --muted: #64748b; --danger: #ef4444;
+    --success: #10b981; --border: #e2e8f0; --white: #ffffff;
+    --radius: 18px; --radius-lg: 28px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Barlow', sans-serif; background: var(--navy);
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 24px 20px;
+    position: relative; overflow: hidden;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -20%, rgba(37,99,235,0.25) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px);
+    pointer-events: none; z-index: 0;
+  }
+  .card {
+    position: relative; z-index: 1; width: 100%; max-width: 420px;
+    background: var(--white); border-radius: var(--radius-lg); overflow: hidden;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+    animation: slideUp 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .card-header { background: var(--navy2); padding: 40px 36px 32px; text-align: center; }
+  .logo-ring {
+    width: 68px; height: 68px; background: var(--blue); border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px; font-size: 26px; color: #fff;
+    box-shadow: 0 8px 24px rgba(37,99,235,0.5);
+  }
+  .brand { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 36px; color: #fff; letter-spacing: 1px; text-transform: uppercase; line-height: 1; }
+  .brand span { color: var(--blue-bright); }
+  .brand-sub { margin-top: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--muted); }
+  .card-body { padding: 36px; background: var(--white); }
+
+  .err-box {
+    display: none; background: #fef2f2; border: 1.5px solid #fecaca;
+    border-radius: 12px; padding: 12px 16px; color: var(--danger);
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 20px; text-align: center;
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block; font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+  }
+  .field input {
+    width: 100%; padding: 16px 18px; background: var(--plate);
+    border: 2px solid transparent; border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif; font-size: 16px; font-weight: 500;
+    color: var(--text); outline: none;
+    transition: border-color 0.2s, background 0.2s; -webkit-appearance: none;
+  }
+  .field input:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); }
+
+  /* Password field with eye toggle */
+  .pass-wrap { position: relative; }
+  .pass-wrap input { padding-right: 52px; }
+  .eye-btn {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--muted); font-size: 17px;
+    cursor: pointer; padding: 6px; display: flex; align-items: center;
+    -webkit-appearance: none; transition: color 0.15s;
+  }
+  .eye-btn:active { color: var(--blue); }
+
+  /* Forgot password */
+  .forgot-row { text-align: right; margin-top: 8px; }
+  .forgot-btn {
+    background: none; border: none; cursor: pointer;
+    font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 700;
+    color: var(--blue); -webkit-appearance: none; padding: 0;
+    transition: opacity 0.15s;
+  }
+  .forgot-btn:active { opacity: 0.6; }
+
+  .btn-signin {
+    width: 100%; margin-top: 16px; padding: 18px;
+    background: var(--navy2); color: #fff; border: none;
+    border-radius: var(--radius); font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; transition: background 0.2s, transform 0.1s;
+    -webkit-appearance: none; min-height: 56px;
+  }
+  .btn-signin:hover { background: var(--blue); }
+  .btn-signin:active { transform: scale(0.97); }
+  .btn-signin:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .footer-note { margin-top: 24px; text-align: center; font-size: 11px; color: var(--muted); font-weight: 500; }
+  .footer-note i { margin-right: 4px; color: var(--success); }
+
+  /* Reset modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6); z-index: 200;
+    align-items: flex-end; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-sheet {
+    background: var(--white); border-radius: 24px 24px 0 0;
+    padding: 28px 24px 48px; width: 100%; max-width: 420px;
+    animation: sheetUp 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+  .modal-title { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; }
+  .modal-sub { font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 20px; line-height: 1.5; }
+  .modal-input {
+    width: 100%; padding: 16px 18px; background: var(--plate);
+    border: 2px solid var(--border); border-radius: var(--radius);
+    font-family: 'Barlow', sans-serif; font-size: 16px; outline: none;
+    margin-bottom: 14px; -webkit-appearance: none; transition: border-color 0.2s;
+  }
+  .modal-input:focus { border-color: var(--blue); }
+  .reset-feedback {
+    display: none; margin-bottom: 14px; padding: 12px 14px;
+    border-radius: 12px; font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .reset-feedback.ok { background: #f0fdf4; border: 1.5px solid #bbf7d0; color: #065f46; }
+  .reset-feedback.err { background: #fef2f2; border: 1.5px solid #fecaca; color: var(--danger); }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-btn {
+    flex: 1; padding: 16px; border: none; border-radius: var(--radius);
+    font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 900;
+    letter-spacing: 2px; text-transform: uppercase; cursor: pointer;
+    -webkit-appearance: none; transition: opacity 0.2s;
+  }
+  .modal-btn:active { opacity: 0.8; }
+  .modal-btn.cancel { background: var(--plate); color: var(--muted); }
+  .modal-btn.confirm { background: var(--blue); color: #fff; }
+  .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-header">
+    <div class="logo-ring"><i class="fas fa-truck-moving"></i></div>
+    <div class="brand">Fleet<span>Pro</span></div>
+    <div class="brand-sub">Operator Authentication</div>
+  </div>
+  <div class="card-body">
+    <div class="err-box" id="err"></div>
+
+    <div class="field">
+      <label>Email Address</label>
+      <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="your@email.com">
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <div class="pass-wrap">
+        <input id="pass" type="password" autocomplete="current-password" placeholder="••••••••">
+        <button class="eye-btn" type="button" onclick="togglePass()" id="eyeBtn" title="Show/hide password">
+          <i class="fas fa-eye" id="eyeIcon"></i>
+        </button>
+      </div>
+      <div class="forgot-row">
+        <button class="forgot-btn" type="button" onclick="openReset()">Forgot password?</button>
+      </div>
+    </div>
+
+    <button class="btn-signin" id="btn" onclick="login()">Sign In</button>
+    <p class="footer-note"><i class="fas fa-shield-alt"></i> Secured & Encrypted</p>
+  </div>
+</div>
+
+<!-- Reset Password Sheet -->
+<div class="modal-overlay" id="resetModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><i class="fas fa-key" style="color:var(--blue);margin-right:8px"></i>Reset Password</div>
+    <p class="modal-sub">Enter your email and we'll send you a reset link right away.</p>
+    <div class="reset-feedback" id="resetFeedback"></div>
+    <input class="modal-input" id="resetEmail" type="email" inputmode="email" placeholder="your@email.com">
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeReset()">Cancel</button>
+      <button class="modal-btn confirm" id="resetBtn" onclick="sendReset()">Send Link</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script>
+firebase.initializeApp({ apiKey: "AIzaSyB5BGypAgb-3KQhf0N1GU5-IqdhtvtzVjw", projectId: "inspection-app-4f19d" });
+
+// Enter key
+document.getElementById('email').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('pass').focus(); });
+document.getElementById('pass').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
+document.getElementById('resetEmail').addEventListener('keydown', e => { if(e.key==='Enter') sendReset(); });
+
+// ── Show / Hide Password ──
+function togglePass() {
+  const input = document.getElementById('pass');
+  const icon  = document.getElementById('eyeIcon');
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  icon.className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+}
+
+// ── Sign In ──
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const pass  = document.getElementById('pass').value;
+  const btn   = document.getElementById('btn');
+  if (!email || !pass) { showErr("Please enter email and password."); return; }
+  btn.disabled = true; btn.innerText = "AUTHENTICATING...";
+  document.getElementById('err').style.display = 'none';
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, pass);
+    location.href = "index.html";
+  } catch (err) {
+    showErr(friendlyError(err.code));
+    btn.disabled = false; btn.innerText = "SIGN IN";
+  }
+}
+
+function showErr(msg) {
+  const el = document.getElementById('err');
+  el.innerText = msg; el.style.display = 'block';
+}
+
+function friendlyError(code) {
+  return {
+    'auth/user-not-found':       'No account found with that email.',
+    'auth/wrong-password':       'Incorrect password. Try again.',
+    'auth/invalid-email':        'Please enter a valid email address.',
+    'auth/invalid-credential':   'Invalid email or password.',
+    'auth/too-many-requests':    'Too many attempts. Please wait and try again.',
+    'auth/network-request-failed': 'Network error. Check your connection.',
+  }[code] || 'Login failed. Please try again.';
+}
+
+// ── Reset Password ──
+function openReset() {
+  const email = document.getElementById('email').value.trim();
+  if (email) document.getElementById('resetEmail').value = email;
+  document.getElementById('resetFeedback').style.display = 'none';
+  document.getElementById('resetBtn').disabled = false;
+  document.getElementById('resetBtn').innerText = 'Send Link';
+  document.getElementById('resetModal').classList.add('open');
+}
+
+function closeReset() {
+  document.getElementById('resetModal').classList.remove('open');
+}
+
+async function sendReset() {
+  const email = document.getElementById('resetEmail').value.trim();
+  const btn   = document.getElementById('resetBtn');
+  const fb    = document.getElementById('resetFeedback');
+  if (!email) { document.getElementById('resetEmail').focus(); return; }
+  btn.disabled = true; btn.innerText = 'SENDING...';
+  fb.style.display = 'none';
+  try {
+    await firebase.auth().sendPasswordResetEmail(email);
+    fb.className = 'reset-feedback ok';
+    fb.innerText = '✓ Reset link sent! Check your inbox.';
+    fb.style.display = 'block';
+    btn.innerText = 'SENT ✓';
+    setTimeout(closeReset, 3000);
+  } catch (err) {
+    fb.className = 'reset-feedback err';
+    fb.innerText = friendlyError(err.code);
+    fb.style.display = 'block';
+    btn.disabled = false; btn.innerText = 'Send Link';
+  }
+}
+
+// Close on overlay tap
+document.getElementById('resetModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('resetModal')) closeReset();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>New Inspection | FleetPro</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+  :root {
+    --navy: #0a0f1e;
+    --navy2: #111827;
+    --blue: #2563eb;
+    --blue-bright: #3b82f6;
+    --plate: #f1f5f9;
+    --text: #0f172a;
+    --muted: #64748b;
+    --danger: #ef4444;
+    --success: #10b981;
+    --border: #e2e8f0;
+    --white: #ffffff;
+    --radius: 16px;
+    --radius-lg: 22px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--plate);
+    min-height: 100vh;
+    padding-bottom: 140px;
+    color: var(--text);
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--navy2);
+    height: 60px;
+    padding: 0 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  .nav-back {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.08);
+    border: none; border-radius: 10px;
+    color: #fff; font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .nav-back:active { background: rgba(255,255,255,0.15); }
+  .nav-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px; font-weight: 900;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: #fff;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    background: var(--navy2);
+    padding: 0 16px 12px;
+  }
+  .progress-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px; height: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--blue);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-top: 6px;
+    text-align: center;
+  }
+
+  /* ── CONTENT ── */
+  .content { padding: 16px; max-width: 600px; margin: 0 auto; }
+
+  /* ── UNIT INFO CARD ── */
+  .unit-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 20px 16px;
+    margin-bottom: 20px;
+    border: 1.5px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .unit-card-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 12px;
+  }
+  .unit-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .unit-inputs input {
+    width: 100%;
+    padding: 14px 14px;
+    background: var(--plate);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 20px; font-weight: 900;
+    text-transform: uppercase;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    letter-spacing: 1px;
+  }
+  .unit-inputs input::placeholder { font-weight: 700; font-size: 16px; letter-spacing: 1px; color: #cbd5e1; text-transform: uppercase; }
+  .unit-inputs input:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+  /* ── SECTION ── */
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 10px; margin-top: 8px;
+  }
+  .section-icon {
+    width: 32px; height: 32px; border-radius: 10px;
+    background: var(--navy2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: var(--blue-bright);
+  }
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px; font-weight: 900;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── CHECKLIST ITEM ── */
+  .check-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    border: 2px solid var(--border);
+    transition: border-color 0.2s;
+    overflow: hidden;
+  }
+  .check-card.is-pass { border-color: var(--success); }
+  .check-card.is-fail { border-color: var(--danger); }
+
+  .check-top {
+    padding: 14px 14px 10px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .check-q {
+    flex: 1;
+    font-size: 15px; font-weight: 600;
+    line-height: 1.3; color: var(--text);
+  }
+  .check-btns {
+    display: flex; gap: 6px; flex-shrink: 0;
+  }
+  .chk-btn {
+    width: 52px; height: 40px;
+    border: 2px solid #94a3b8;
+    border-radius: 12px;
+    background: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px; font-weight: 900;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s;
+    -webkit-appearance: none;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .chk-btn.pass-active {
+    background: var(--success); border-color: var(--success);
+    color: #fff; box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+  }
+  .chk-btn.fail-active {
+    background: var(--danger); border-color: var(--danger);
+    color: #fff; box-shadow: 0 2px 8px rgba(239,68,68,0.3);
+  }
+  .chk-btn:active { transform: scale(0.94); }
+
+  .defect-area {
+    display: none;
+    padding: 0 14px 14px;
+  }
+  .defect-area textarea {
+    width: 100%;
+    padding: 12px 14px;
+    background: #fef2f2;
+    border: 1.5px solid #fecaca;
+    border-radius: 12px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    resize: none;
+    min-height: 70px;
+    -webkit-appearance: none;
+    transition: border-color 0.2s;
+  }
+  .defect-area textarea:focus { border-color: var(--danger); }
+  .defect-area textarea::placeholder { color: #f87171; font-weight: 500; }
+
+  /* ── SIGNATURE ── */
+  .sig-card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 20px 16px;
+    margin-top: 20px;
+    border: 1.5px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+  .sig-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .sig-clear {
+    background: none; border: none;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--danger); cursor: pointer;
+  }
+
+  #sig-canvas {
+    width: 100%; height: 160px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    background: var(--plate);
+    display: block;
+    touch-action: none;
+    cursor: crosshair;
+  }
+  .sig-hint {
+    text-align: center;
+    font-size: 11px; font-weight: 500;
+    color: var(--muted); margin-top: 8px;
+  }
+
+  /* ── SUBMIT BUTTON ── */
+  #subBtn {
+    position: fixed;
+    bottom: 16px; left: 16px; right: 16px;
+    max-width: 568px;
+    margin: 0 auto;
+    display: block;
+    padding: 20px;
+    background: var(--navy2);
+    color: #fff;
+    border: none; border-radius: var(--radius-lg);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px; font-weight: 900;
+    letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    transition: background 0.2s, transform 0.1s;
+    -webkit-appearance: none;
+    z-index: 10;
+  }
+  #subBtn:active { transform: scale(0.97); }
+  #subBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  #subBtn.ready { background: var(--blue); box-shadow: 0 8px 32px rgba(37,99,235,0.35); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%);
+    background: var(--navy2); color: #fff;
+    padding: 12px 24px; border-radius: 40px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    z-index: 200; white-space: nowrap;
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+    user-select: none;
+  }
+  .toast.show { opacity: 1; }
+  .toast.error { background: var(--danger); }
+</style>
+</head>
+<body>
+
+<nav>
+  <button class="nav-back" onclick="history.back()"><i class="fas fa-chevron-left"></i></button>
+  <div class="nav-title">Inspection Log</div>
+  <div style="width:38px"></div>
+</nav>
+
+<div class="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 of 0 items checked</div>
+</div>
+
+<div class="content">
+  <!-- Unit Info -->
+  <div class="unit-card">
+    <div class="unit-card-label">Equipment</div>
+    <div class="unit-inputs">
+      <input id="truck" type="text" inputmode="text" placeholder="Truck #" autocomplete="off" autocapitalize="characters">
+      <input id="trailer" type="text" inputmode="text" placeholder="Trailer #" autocomplete="off" autocapitalize="characters">
+    </div>
+  </div>
+
+  <!-- Form sections -->
+  <div id="formContainer"></div>
+
+  <!-- Signature -->
+  <div class="sig-card">
+    <div class="sig-label">
+      Driver Signature
+      <button class="sig-clear" onclick="clearSig()">Clear</button>
+    </div>
+    <canvas id="sig-canvas"></canvas>
+    <p class="sig-hint">Sign with your finger or stylus</p>
+  </div>
+</div>
+
+<button id="subBtn" onclick="submit()">Submit Inspection</button>
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+firebase.initializeApp({ apiKey: "AIzaSyB5BGypAgb-3KQhf0N1GU5-IqdhtvtzVjw", projectId: "inspection-app-4f19d" });
+const db = firebase.firestore();
+
+const sections = {
+  "ENGINE BAY": { icon: "fa-cog", items: [
+    "Fuel/Water Filter Level High",
+    "Oil Level",
+    "Coolant Level",
+    "Long Crank/Hard Start",
+    "Fuel Tank Caps Missing or Leaking",
+    "Leaking Coolant Hoses/Clamps",
+    "Fluids on Ground Overnight",
+    "Exhaust (Leaks/Brackets)"
+  ]},
+  "CAB": { icon: "fa-truck-moving", items: [
+    "Horn Operational",
+    "Signals/Wipers",
+    "ABS Light",
+    "Intermittent Codes or Check Lights",
+    "Glass & Mirrors Clean/Operational",
+    "Emergency Equipment",
+    "Extra W/W Fluid/Oil/Coolant",
+    "Heater/Defroster"
+  ]},
+  "EXTERIOR": { icon: "fa-car-side", items: [
+    "Signals/Marker Lights/Reflectors",
+    "Headlamps High/Low Beam",
+    "Safety Sticker"
+  ]},
+  "SUSPENSION SYSTEM": { icon: "fa-circle-notch", items: [
+    "Air Bags Full Before Moving",
+    "Leaf Springs",
+    "U-Bolts Intact",
+    "Leveling Rod and Connections",
+    "Air Line Leaks",
+    "Shocks (Broken/Leaking)",
+    "Compressor Slow to Filling Tanks",
+    "Air Tanks Drained (Daily!)"
+  ]},
+  "WHEELS": { icon: "fa-circle-notch", items: [
+    "Tire Condition (Wear/Cords/Cracks)",
+    "Tire Pressures",
+    "Hub Oil Level and/or Leaks",
+    "Truck Pulls Left or Right When Braking"
+  ]},
+  "TRAILER — GENERAL": { icon: "fa-truck-moving", items: [
+    "Safety Sticker",
+    "AIR (Lines/Couplings/Leaks/Bags Full)",
+    "ABS Light",
+    "Tire Condition (Pressures/Uneven Wear/Cord)",
+    "Lug Nuts & Skid Marker",
+    "Hub Oil Level & Leaks",
+    "Signals/Marker Lights/Reflectors",
+    "Landing Gear/Shocks/Mudflaps"
+  ]},
+  "DECK TRAILER": { icon: "fa-truck-moving", items: [
+    "Rub Rail",
+    "Frame (Cracks)",
+    "Cross Members (Loose/Damaged)",
+    "Rear Bumper"
+  ]},
+  "DRY VAN TRAILER": { icon: "fa-archive", items: [
+    "Door (Operation/Seals)",
+    "Roof/Panels (Loose/Holes)",
+    "Rear Bumper",
+    "Sliding Axle Operational"
+  ]}
+};
+
+const results = {};
+const totalItems = Object.values(sections).reduce((a, s) => a + s.items.length, 0);
+
+// Build form
+const container = document.getElementById('formContainer');
+Object.entries(sections).forEach(([title, sect]) => {
+  const wrap = document.createElement('div');
+  wrap.style.marginBottom = '20px';
+  let html = `<div class="section-header">
+    <div class="section-title">${title}</div>
+  </div>`;
+  sect.items.forEach(q => {
+    const sectionKey = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    const id = sectionKey + '-' + q.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    html += `<div class="check-card" id="card-${id}">
+      <div class="check-top">
+        <div class="check-q">${q}</div>
+        <div class="check-btns">
+          <button class="chk-btn" id="pass-${id}" onclick="set('${id}','pass')">✓ OK</button>
+          <button class="chk-btn" id="fail-${id}" onclick="set('${id}','fail')">✗ Fail</button>
+        </div>
+      </div>
+      <div class="defect-area" id="defect-${id}">
+        <textarea id="note-${id}" placeholder="Describe the defect…" rows="2"></textarea>
+      </div>
+    </div>`;
+  });
+  wrap.innerHTML = html;
+  container.appendChild(wrap);
+});
+
+function set(id, status) {
+  results[id] = { status };
+  const card = document.getElementById('card-' + id);
+  const p = document.getElementById('pass-' + id);
+  const f = document.getElementById('fail-' + id);
+  const d = document.getElementById('defect-' + id);
+  if (!card || !p || !f || !d) { console.warn('Element not found for id:', id); return; }
+  card.className = 'check-card is-' + status;
+  if (status === 'pass') {
+    p.className = 'chk-btn pass-active';
+    f.className = 'chk-btn';
+    d.style.display = 'none';
+  } else {
+    f.className = 'chk-btn fail-active';
+    p.className = 'chk-btn';
+    d.style.display = 'block';
+    d.querySelector('textarea').focus();
+  }
+  updateProgress();
+  updateSubmitBtn();
+}
+
+function updateProgress() {
+  const checked = Object.keys(results).length;
+  const pct = Math.round((checked / totalItems) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').innerText = `${checked} of ${totalItems} items checked`;
+}
+
+function updateSubmitBtn() {
+  const btn = document.getElementById('subBtn');
+  const allChecked = Object.keys(results).length === totalItems;
+  btn.className = allChecked ? 'ready' : '';
+}
+
+// ── SIGNATURE ──
+const canvas = document.getElementById('sig-canvas');
+const ctx = canvas.getContext('2d');
+let drawing = false;
+
+function resizeCanvas() {
+  const ratio = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * ratio;
+  canvas.height = rect.height * ratio;
+  ctx.scale(ratio, ratio);
+  ctx.strokeStyle = '#0f172a';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+}
+window.addEventListener('load', resizeCanvas);
+window.addEventListener('resize', resizeCanvas);
+
+function getPos(e) {
+  const r = canvas.getBoundingClientRect();
+  const src = e.touches ? e.touches[0] : e;
+  return { x: src.clientX - r.left, y: src.clientY - r.top };
+}
+
+canvas.addEventListener('pointerdown', e => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); canvas.setPointerCapture(e.pointerId); });
+canvas.addEventListener('pointermove', e => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+canvas.addEventListener('pointerup', () => drawing = false);
+canvas.addEventListener('pointercancel', () => drawing = false);
+
+function clearSig() { resizeCanvas(); }
+
+// ── TOAST ──
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 2500);
+}
+
+// ── SUBMIT ──
+async function submit() {
+  const btn = document.getElementById('subBtn');
+  const truck = document.getElementById('truck').value.trim();
+  if (!truck) { showToast('Truck # required', 'error'); document.getElementById('truck').focus(); return; }
+
+  const unchecked = totalItems - Object.keys(results).length;
+  if (unchecked > 0) {
+    const proceed = confirm(`${unchecked} item(s) not checked. Uncheck items will default to PASS. Continue?`);
+    if (!proceed) return;
+  }
+
+  btn.disabled = true; btn.innerText = 'UPLOADING...';
+  try {
+    const u = firebase.auth().currentUser;
+    if (!u) { location.href='login.html'; return; }
+    const profile = (await db.collection("users").doc(u.uid).get()).data();
+    const final = {};
+    Object.entries(sections).forEach(([title, sect]) => {
+      sect.items.forEach(q => {
+      const sectionKey = title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      const id = sectionKey + '-' + q.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+      const s = results[id]?.status || 'pass';
+      final[id] = { question: q, status: s, note: s === 'fail' ? (document.getElementById(`note-${id}`)?.value || '') : '' };
+    });
+    });
+    await db.collection("inspections").add({
+      truck, trailer: document.getElementById('trailer').value.trim() || "N/A",
+      driverId: u.uid, driverName: profile.name,
+      issues: Object.values(final).filter(v => v.status === 'fail').length,
+      checklist: final, signature: canvas.toDataURL(),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast('Inspection submitted!');
+    setTimeout(() => location.href='index.html', 1000);
+  } catch(err) {
+    showToast('Upload failed. Try again.', 'error');
+    btn.disabled = false; btn.innerText = 'Submit Inspection';
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Inspection Report | FleetPro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+  :root {
+    --navy: #0a0f1e; --navy2: #111827; --blue: #2563eb; --blue-bright: #3b82f6;
+    --plate: #f1f5f9; --text: #0f172a; --muted: #64748b; --danger: #ef4444;
+    --success: #10b981; --warning: #f59e0b; --border: #e2e8f0; --white: #ffffff;
+    --radius: 14px; --radius-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Barlow', sans-serif; background: var(--plate); color: var(--text); padding-bottom: 40px; }
+
+  /* NAV */
+  nav {
+    background: var(--navy2); height: 60px; padding: 0 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  .nav-back {
+    width: 38px; height: 38px; background: rgba(255,255,255,0.08);
+    border: none; border-radius: 10px; color: #fff; font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .nav-title { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; color: #fff; }
+  .btn-print {
+    padding: 8px 16px; background: var(--blue); border: none; border-radius: 10px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 900;
+    letter-spacing: 2px; text-transform: uppercase; color: #fff; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .page { padding: 16px; max-width: 720px; margin: 0 auto; }
+
+  /* HEADER CARD */
+  .header-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    overflow: hidden; margin-bottom: 12px;
+    border: 1.5px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .header-top {
+    padding: 16px 18px 12px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-brand { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 900; color: var(--muted); text-transform: uppercase; letter-spacing: 3px; }
+  .header-brand span { color: var(--blue); }
+  .header-id { font-size: 10px; color: #cbd5e1; font-family: monospace; margin-top: 2px; }
+  .header-badge {
+    padding: 6px 14px; border-radius: 30px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 900;
+    letter-spacing: 2px; text-transform: uppercase; white-space: nowrap;
+  }
+  .badge-ok { background: #d1fae5; color: #065f46; }
+  .badge-fail { background: #fee2e2; color: #991b1b; }
+  .badge-fixed { background: #dbeafe; color: #1e40af; }
+
+  .meta-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 0; border-top: 1px solid var(--border);
+  }
+  .meta-cell {
+    padding: 14px 16px; border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .meta-cell:nth-child(even) { border-right: none; }
+  .meta-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .meta-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+  .meta-value { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 900; color: var(--text); line-height: 1; }
+  .meta-value.sm { font-size: 14px; font-family: 'Barlow', sans-serif; font-weight: 600; }
+
+  /* SUMMARY ROW */
+  .summary-row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 10px; margin-bottom: 12px;
+  }
+  .summary-card {
+    background: var(--white); border-radius: var(--radius);
+    padding: 14px; text-align: center;
+    border: 1.5px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .summary-card .s-label { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .summary-card .s-value { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 900; line-height: 1; }
+  .s-value.ok { color: var(--success); }
+  .s-value.fail { color: var(--danger); }
+  .s-value.neutral { color: var(--text); }
+
+  /* SECTION HEADER */
+  .section-hdr {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 900;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--muted);
+    margin: 16px 0 8px 4px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-hdr::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* DEFECT CARDS */
+  .defect-card {
+    background: var(--white); border-radius: var(--radius);
+    border: 2px solid var(--danger); margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .defect-card.resolved { border-color: var(--blue); }
+  .defect-top {
+    display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+    background: #fef2f2;
+  }
+  .defect-card.resolved .defect-top { background: #eff6ff; }
+  .defect-icon {
+    width: 32px; height: 32px; border-radius: 8px; background: #fee2e2;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: var(--danger); flex-shrink: 0;
+  }
+  .defect-card.resolved .defect-icon { background: #dbeafe; color: var(--blue); }
+  .defect-q { font-size: 14px; font-weight: 700; color: var(--text); flex: 1; line-height: 1.3; }
+  .defect-status {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 900;
+    letter-spacing: 2px; text-transform: uppercase; padding: 4px 10px;
+    border-radius: 20px; background: #fee2e2; color: #991b1b; white-space: nowrap;
+  }
+  .defect-card.resolved .defect-status { background: #dbeafe; color: #1e40af; }
+  .defect-note {
+    padding: 10px 16px; font-size: 13px; font-weight: 600;
+    color: #991b1b; background: #fff5f5; border-top: 1px solid #fecaca;
+    font-style: italic;
+  }
+  .defect-card.resolved .defect-note { color: #1e40af; background: #f0f7ff; border-color: #bfdbfe; }
+
+  /* PASSED ITEMS GRID */
+  .passed-grid {
+    background: var(--white); border-radius: var(--radius);
+    border: 1.5px solid var(--border); overflow: hidden;
+    margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .passed-section-title {
+    padding: 10px 14px; background: #f0fdf4;
+    border-bottom: 1px solid #bbf7d0;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 900;
+    letter-spacing: 3px; text-transform: uppercase; color: #065f46;
+  }
+  .passed-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 14px; border-bottom: 1px solid var(--border);
+  }
+  .passed-item:last-child { border-bottom: none; }
+  .pass-dot {
+    width: 22px; height: 22px; border-radius: 6px; background: #d1fae5;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--success); flex-shrink: 0;
+  }
+  .pass-q { font-size: 13px; font-weight: 500; color: var(--text); }
+
+  /* REPAIR BLOCK */
+  .repair-card {
+    background: #ecfdf5; border: 2px solid var(--success);
+    border-radius: var(--radius); padding: 16px; margin-bottom: 12px;
+  }
+  .repair-title {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 900;
+    letter-spacing: 2px; text-transform: uppercase; color: #065f46;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .repair-note {
+    font-size: 13px; font-weight: 600; color: var(--text);
+    background: var(--white); padding: 10px 12px; border-radius: 8px;
+    border: 1px solid #a7f3d0; margin-bottom: 6px; line-height: 1.5;
+  }
+  .repair-date { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #059669; }
+
+  /* SIGNATURE */
+  .sig-card {
+    background: var(--white); border-radius: var(--radius);
+    padding: 16px; border: 1.5px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04); margin-bottom: 12px;
+  }
+  .sig-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .sig-img { height: 80px; max-width: 100%; object-fit: contain; border-bottom: 2px solid var(--border); padding-bottom: 10px; display: block; }
+  .sig-date { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 8px; }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 80px 20px; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading p { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; }
+
+  /* PRINT */
+  @media print {
+    nav { display: none !important; }
+    body { background: #fff; padding: 0; }
+    .page { padding: 10px; max-width: 100%; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <button class="nav-back" onclick="history.back()"><i class="fas fa-chevron-left"></i></button>
+  <div class="nav-title">Inspection Report</div>
+  <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+</nav>
+
+<div class="page" id="pageContent">
+  <div class="loading"><div class="spinner"></div><p>Loading report...</p></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script>
+firebase.initializeApp({ apiKey: "AIzaSyB5BGypAgb-3KQhf0N1GU5-IqdhtvtzVjw", projectId: "inspection-app-4f19d" });
+const db = firebase.firestore();
+const id = new URLSearchParams(window.location.search).get('id');
+
+async function load() {
+  const page = document.getElementById('pageContent');
+  if (!id) { page.innerHTML = '<div class="loading"><p>No report ID.</p></div>'; return; }
+  try {
+    const doc = await db.collection("inspections").doc(id).get();
+    if (!doc.exists) { page.innerHTML = '<div class="loading"><p>Report not found.</p></div>'; return; }
+    const data = doc.data();
+    const time = data.createdAt ? new Date(data.createdAt.seconds*1000).toLocaleString('en-CA', { dateStyle:'medium', timeStyle:'short' }) : '---';
+    const items = Object.values(data.checklist || {});
+    const fails = items.filter(i => i.status === 'fail');
+    const passes = items.filter(i => i.status !== 'fail');
+    const score = items.length > 0 ? Math.round((passes.length / items.length) * 100) : 100;
+
+    // Status badge
+    let badgeClass, badgeText;
+    if (data.resolved) { badgeClass='badge-fixed'; badgeText='Repaired & Safe'; }
+    else if (fails.length > 0) { badgeClass='badge-fail'; badgeText=`${fails.length} Defect${fails.length>1?'s':''}`; }
+    else { badgeClass='badge-ok'; badgeText='DOT Compliant'; }
+
+    // Group passed items by section
+    const sectionOrder = [
+      "ENGINE BAY","CAB","EXTERIOR","SUSPENSION SYSTEM","WHEELS",
+      "TRAILER — GENERAL","DECK TRAILER","DRY VAN TRAILER"
+    ];
+    const grouped = {};
+    Object.entries(data.checklist || {}).forEach(([key, item]) => {
+      if (item.status !== 'fail') {
+        // Extract section from key prefix
+        const sectionKey = sectionOrder.find(s => key.startsWith(s.replace(/[^a-z0-9]/gi,'-').toLowerCase()));
+        const section = sectionKey || 'OTHER';
+        if (!grouped[section]) grouped[section] = [];
+        grouped[section].push(item);
+      }
+    });
+
+    // Build passed sections HTML
+    let passedHTML = '';
+    sectionOrder.forEach(section => {
+      const sItems = grouped[section];
+      if (!sItems || sItems.length === 0) return;
+      passedHTML += `
+        <div class="passed-grid">
+          <div class="passed-section-title">${section}</div>
+          ${sItems.map(i => `
+            <div class="passed-item">
+              <div class="pass-dot"><i class="fas fa-check"></i></div>
+              <div class="pass-q">${i.question}</div>
+            </div>`).join('')}
+        </div>`;
+    });
+
+    // Build defects HTML
+    let defectsHTML = '';
+    if (fails.length > 0) {
+      defectsHTML = `<div class="section-hdr"><i class="fas fa-exclamation-triangle" style="color:var(--danger)"></i> Defects Found</div>`;
+      defectsHTML += fails.map(i => `
+        <div class="defect-card ${data.resolved ? 'resolved' : ''}">
+          <div class="defect-top">
+            <div class="defect-icon"><i class="fas ${data.resolved ? 'fa-tools' : 'fa-times'}"></i></div>
+            <div class="defect-q">${i.question}</div>
+            <div class="defect-status">${data.resolved ? 'Fixed' : 'Defect'}</div>
+          </div>
+          ${i.note ? `<div class="defect-note"><i class="fas fa-comment-alt" style="margin-right:6px"></i>${i.note}</div>` : ''}
+        </div>`).join('');
+    }
+
+    // Repair block
+    let repairHTML = '';
+    if (data.resolved) {
+      repairHTML = `
+        <div class="repair-card">
+          <div class="repair-title"><i class="fas fa-tools"></i> Maintenance Certification</div>
+          <div class="repair-note">${data.repairNote}</div>
+          <div class="repair-date"><i class="fas fa-calendar-check" style="margin-right:4px"></i>Resolved: ${new Date(data.resolvedAt.seconds*1000).toLocaleString('en-CA',{dateStyle:'medium',timeStyle:'short'})}</div>
+        </div>`;
+    }
+
+    page.innerHTML = `
+      <!-- HEADER -->
+      <div class="header-card">
+        <div class="header-top">
+          <div>
+            <div><div class="header-brand">Fleet<span>Pro</span> Inspection Report</div><div class="header-id">ID: ${id}</div></div>
+            
+          </div>
+          <div class="header-badge ${badgeClass}">${badgeText}</div>
+        </div>
+        <div class="meta-row">
+          <div class="meta-cell"><div class="meta-label">Unit #</div><div class="meta-value">${data.truck}</div></div>
+          <div class="meta-cell"><div class="meta-label">Trailer #</div><div class="meta-value">${data.trailer || 'N/A'}</div></div>
+          <div class="meta-cell"><div class="meta-label">Driver</div><div class="meta-value sm">${data.driverName}</div></div>
+          <div class="meta-cell"><div class="meta-label">Date & Time</div><div class="meta-value sm">${time}</div></div>
+        </div>
+      </div>
+
+      <!-- SUMMARY -->
+      <div class="summary-row">
+        <div class="summary-card"><div class="s-label">Total Items</div><div class="s-value neutral">${items.length}</div></div>
+        <div class="summary-card"><div class="s-label">Passed</div><div class="s-value ok">${passes.length}</div></div>
+        <div class="summary-card"><div class="s-label">Defects</div><div class="s-value ${fails.length > 0 ? 'fail' : 'ok'}">${fails.length}</div></div>
+      </div>
+
+      <!-- DEFECTS FIRST -->
+      ${defectsHTML}
+
+      <!-- REPAIR CERT -->
+      ${repairHTML}
+
+      <!-- ALL PASSED ITEMS BY SECTION -->
+      ${passes.length > 0 ? `<div class="section-hdr"><i class="fas fa-check-circle" style="color:var(--success)"></i> Passed Items</div>` : ''}
+      ${passedHTML}
+
+      <!-- SIGNATURE -->
+      <div class="sig-card">
+        <div class="sig-label">Driver Signature</div>
+        <img class="sig-img" src="${data.signature}" alt="Driver Signature">
+        <div class="sig-date"><i class="fas fa-clock" style="margin-right:4px"></i>Signed: ${time}</div>
+      </div>`;
+
+  } catch(err) {
+    document.getElementById('pageContent').innerHTML = '<div class="loading"><p>Error loading report.</p></div>';
+    console.error(err);
+  }
+}
+load();
+</script>
+</body>
+</html>
